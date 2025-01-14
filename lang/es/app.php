@@ -26,6 +26,12 @@ return [
 		'prestamoHistorico' => 'prestamoHistorico',
 		'prestamosayer' => 'Prestamosayer',
 		'PrestamosAyer' => 'PrestamosAyer',
+		'casa' => 'Casa',
+		'Casa' => 'Casa',
+		'apartamento' => 'Apartamento',
+		'Apartamento' => 'Apartamento',
+		'foto' => 'Foto',
+		'Foto' => 'Foto',
 		//aquipues
     ],
 
@@ -42,6 +48,12 @@ return [
 		'prestamoHistorico' => 'prestamoHistorico',
 		'prestamosayer' => 'Prestamosayer',
 		'PrestamosAyer' => 'PrestamosAyer',
+		'casa' => 'Casa',
+		'Casa' => 'Casa',
+		'apartamento' => 'Apartamento',
+		'Apartamento' => 'Apartamento',
+		'foto' => 'Foto',
+		'Foto' => 'Foto',
 		//aquipues
 
         //transaccion

@@ -28,6 +28,9 @@ const sidebarButtonsNormal = [ //SAME AS WEB.PHP
 	'Horario',
 	'prestamoHistorico',
 	'PrestamosAyer',
+	'Casa',
+	'Apartamento',
+	'Foto',
 	//aquipuesSide
 ];
 function capitalizeFirstLetter(string) {

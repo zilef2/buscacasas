@@ -16,17 +16,17 @@ return new class extends Migration {
             $table->id();
             $table->softDeletes();
             $table->string('name')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->string('email')->unique()->nullable();
+            $table->string('password')->nullable();
 
-            $table->string('identificacion')->unique();
+            $table->string('identificacion')->unique()->nullable();
             $table->string('sexo')->default('Masculino');
             $table->dateTime('fecha_nacimiento')->nullable();
             $table->string('celular')->nullable();
 
             $table->string('cargo')->nullable();
             $table->longText('firma')->nullable();
-            $table->string('tipo_user')->nullable();
+            $table->string('tipo_user')->nullable(); //arrendatario , interesado , conocido , prestador
 
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
