@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 //use Google\Service\SemanticTile\Area;
@@ -16,16 +17,17 @@ class DatabaseSeeder extends Seeder
      * @return void
      */
     public function run(){
-        // \App\Models\User::factory(10)->create();
         $this->call([
             ParametroSeeder::class,
             PermissionSeeder::class,
             RoleSeeder::class,
 
             UserSeeder::class,
-//            LLavesDocentesObjectosSeeder::class,
+            CasaSeeder::class,
         ]);
+         User::factory(10)->create();
 
+         
 //        $usuarios = DB::connection('secundaria')->table('usuarios')->get();
     }
 }

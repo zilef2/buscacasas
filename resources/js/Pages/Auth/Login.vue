@@ -16,12 +16,13 @@ defineProps({
 const form = useForm({
     email: '',
     password: '',
-    remember: false,
+    remember: true,
 });
 
 const submit = () => {
     form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+        onFinish: () => null
+            // form.reset('password'),
     });
 };
 </script>

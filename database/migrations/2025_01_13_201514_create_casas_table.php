@@ -12,12 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('casas', function (Blueprint $table) {
+            
             $table->id();
             $table->SoftDeletes();
             $table->string('nombre')->nullable();
             $table->string('tipo_inmueble')->default('Apartamento');
             $table->string('barrio');
-            $table->string('precio');
+            $table->bigInteger('precio');
             
             
             $table->string('ventaOarriendo')->nullable();
@@ -36,7 +37,6 @@ return new class extends Migration
             $table->integer('habitaciones')->nullable();
             $table->boolean('acepta_mascotas')->default(false);
             $table->smallInteger('administracion')->nullable();
-            $table->string('administracion')->nullable();
             $table->string('contrato_minimo')->nullable();
             $table->string('cambio_precio1')->nullable();
             $table->string('cambio_precio2')->nullable();

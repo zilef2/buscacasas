@@ -18,7 +18,7 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'isSuper']);
         Permission::create(['name' => 'isAdmin']);
 
-        $constantes = CargosModelos::CargosYModelos();
+        $constantes = CargosModelos::CargosANDModelos();
         
         foreach ($constantes['nombresDeCargos'] as $key => $value) {
             Permission::create(['name' => 'is'.$value]);

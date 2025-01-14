@@ -13,13 +13,13 @@ class RoleSeeder extends Seeder
      *
      * @return void
      */
-    public function run(){
-
-        //<editor-fold desc="no tocar">
+    public function run()
+    {
+        //<editor-fold desc="//-dont touch bro">
         $superadmin = Role::create(['name' => 'superadmin']);
         $admin = Role::create(['name' => 'admin']);
 
-        $constantes = CargosModelos::CargosYModelos();
+        $constantes = CargosModelos::CargosANDModelos();
 
         $crudCompleto = $constantes['crudCompleto'];
         $crudSemiCompleto = $constantes['crudSemiCompleto'];
@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
                 $admin->givePermissionTo([$crud . ' ' . $model]);
             }
         }
-        $isSomeThing = array_merge(  [ "isSuper", "isAdmin" ], $constantes['isSome']);
+        $isSomeThing = array_merge(["isSuper", "isAdmin"], $constantes['isSome']);
         $superadmin->givePermissionTo($isSomeThing); //al superadmin, se le da rol de todos
         unset($isSomeThing[0]);
         $admin->givePermissionTo($isSomeThing);
@@ -43,12 +43,16 @@ class RoleSeeder extends Seeder
 
         $core = $constantes['core'];
         $nombresDeCargos = $constantes['nombresDeCargos'];
+        $primerCargo = (reset($nombresDeCargos));
 
-        ${$nombresDeCargos[0]}->givePermissionTo([//?
-            'read '.$core, 'firmar '.$core, 'download '.$core
-        ]);
-
-//        ${$nombresDeCargos[1]}->givePermissionTo([//?
+        //! se asigna a "persona" todos los permisos
+        foreach ($crudSemiCompleto as $index => $item) { //ejemplo buscacasas: item = update
+            ${$primerCargo}->givePermissionTo([ //ejemplo buscacasas: persona
+                $item . ' ' . $core //evaluate: $persona->givepermissionto = update casa
+            ]);
+        }
+//        $elcargo = current(next($nombresDeCargos));
+//        ${$elcargo}->givePermissionTo([
 //            'read '.$core,  'create '.$core, 'update '.$core, 'download '.$core,
 //            'read area',
 //            'read user',
@@ -62,12 +66,11 @@ class RoleSeeder extends Seeder
 //            }
 //        }
 
-
         /**
-         * just for memory JFM
-           @Comandos utiles: no  olvidar
-            // $role->revokePermissionTo($permission);
-            // $permission->removeRole($role);
+         * /////-just for memory
+         * @Comandos utiles: no  olvidar
+         * // $role->revokePermissionTo($permission);
+         * // $permission->removeRole($role);
          */
     }
 }

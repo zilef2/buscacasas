@@ -5,23 +5,21 @@ namespace App\helpers;
 class CargosModelos {
 
     //JUST THIS PROJECT
-    public static function CargosYModelos() {
-        $crudSemiCompleto = ['update', 'read', 'create','download','sugerencia','aprobar','egreso','ingreso','firmar'];
+    public static function CargosANDModelos(): array
+    {
+        $crudSemiCompleto = ['update', 'read', 'create','update2']; //-tochange plantilla
         $crudCompleto = array_merge(['delete'], $crudSemiCompleto);
         
         //otros cargos NO_ADMIN
-        $nombresDeCargos = [
-            'Rector',//1
-            'ViceRector', //2
-            'Lider', //3
-            'Vinculado', //4
-            'Contratista', //5
+        $nombresDeCargos = [ //-tochange plantilla
+            'arrendatario',//1
+            'persona',//2
         ];//recuerda userseeder, RoleSeeder
         $isSome = [];
         foreach ($nombresDeCargos as $key => $value) {
             $isSome[] = 'is' . $value;
         }
-        $elcore = 'llaves';
+        $elcore = 'casa'; //tochange plantilla
         $Models = [
             'role',
             'permission',

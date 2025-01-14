@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Models\Role as ModelsRole;
 
+/**
+* @method static givePermissionTo(array $array)
+ * @method static count()
+ */  
 class Role extends ModelsRole
 {
     use HasFactory;
