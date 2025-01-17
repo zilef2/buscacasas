@@ -21,13 +21,7 @@ const toggleContent = () => {
 const toggleContent2 = () => {
     data.showContent2 = !data.showContent2
 }
-const sidebarButtonsNormal = [ //SAME AS WEB.PHP
-	'docentes',
-	'llaves',
-	'objetos',
-	'Horario',
-	'prestamoHistorico',
-	'PrestamosAyer',
+const sidebarButtonsNormal = [ //SAME AS WEB.PHP //-tochange plantilla
 	'Casa',
 	'Apartamento',
 	'Foto',

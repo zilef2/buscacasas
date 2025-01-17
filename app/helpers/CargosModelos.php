@@ -19,9 +19,9 @@ class CargosModelos {
         foreach ($nombresDeCargos as $key => $value) {
             $isSome[] = 'is' . $value;
         }
-        $elcore = 'casa'; //tochange plantilla
+        $elcore = 'Casa'; //tochange plantilla
         $Models = [
-            'role',
+            'role', 
             'permission',
             'user',
             'parametro',

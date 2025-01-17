@@ -8,7 +8,7 @@ import SwitchDarkModeNavbar from '@/Components/SwitchDarkModeNavbar.vue'
 import FuncionesSuperAdmin from "@/Components/FuncionesSuperAdmin.vue";
 
 const emit = defineEmits(["open"])
-const version = 'v0.1 - 7nov2024'
+const version = '14d1m2025a'
 
 const downloadExcel = () => { window.open('DB_info' , '_blank') }
 </script>

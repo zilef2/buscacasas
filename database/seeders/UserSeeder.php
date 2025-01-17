@@ -34,7 +34,6 @@ class UserSeeder extends Seeder
         ]);
         $superadmin->assignRole('superadmin');
 
-
         $admin = User::create([
             'name' => "$nombreAdmin $App",
             'email' => "alejofg2+'. $numAppEmails.'@gmail.com",

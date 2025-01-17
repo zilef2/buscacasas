@@ -60,12 +60,6 @@ Route::middleware(['auth'])->group(callback: function () {
 
     //<editor-fold desc="resources">
     Route::resource('/user', UserController::class);
-	Route::resource("/docentes", \App\Http\Controllers\DocentesController::class);
-	Route::resource("/llaves", \App\Http\Controllers\LlavesController::class);
-	Route::resource("/objetos", \App\Http\Controllers\ObjetosController::class);
-	Route::resource("/Horario", \App\Http\Controllers\HorarioController::class);
-	Route::resource("/prestamoHistorico", \App\Http\Controllers\prestamoHistoricoController::class);
-	Route::resource("/PrestamosAyer", \App\Http\Controllers\PrestamosAyerController::class);
 	Route::resource("/Casa", \App\Http\Controllers\CasaController::class);
 	Route::resource("/Apartamento", \App\Http\Controllers\ApartamentoController::class);
 	Route::resource("/Foto", \App\Http\Controllers\FotoController::class);

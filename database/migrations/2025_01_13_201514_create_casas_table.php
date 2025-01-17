@@ -16,14 +16,15 @@ return new class extends Migration
             $table->id();
             $table->SoftDeletes();
             $table->string('nombre')->nullable();
-            $table->string('tipo_inmueble')->default('Apartamento');
-            $table->string('barrio');
             $table->bigInteger('precio');
             
-            
+            //filtros
+            $table->string('tipo_inmueble')->default('Apartamento');
             $table->string('ventaOarriendo')->nullable();
+            $table->string('barrio');
+            
             $table->string('usado')->nullable();
-            $table->string('ciudad')->nullable();
+            $table->string('ciudad')->default('Medellin');
             $table->string('pais')->default('Colombia');
             $table->string('inmoviliaria')->nullable();
             $table->string('tamano_m2')->nullable();

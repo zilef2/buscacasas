@@ -11,6 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @method static count()
+ * @method static create(array $array)
  */
 class User extends Authenticatable
 {
