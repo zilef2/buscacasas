@@ -14,34 +14,39 @@ class Casa extends Model
     protected $fillable = [
         'id',
         'nombre',
-        'precio',
         
         'tipo_inmueble',
         'ventaOarriendo',
         'barrio',
-        
         'ciudad',
         'pais',
+        
+        'precio',
+        'administracion',
+        
+        'habitaciones',
+        'banos',
+        'acepta_mascotas',
+        'terraza',
+        'pisos_interiores',
         
         'usado',
         'inmoviliaria',
         'tamano_m2',
+        
         'contacto_celular',
         'contacto_celular2',
+        
         'estrato',
-        'estado',
         'antiguedad',
         'parqueaderos',
-        'banos',
-        'habitaciones',
-        'acepta_mascotas',
-        'administracion',
-        'contrato_minimo',
-        'cambio_precio1',
-        'cambio_precio2',
-        'pisos_interiores',
-        'terraza',
-        'comodidades',
+        'estado',
+        'contrato_minimo', //?
+        'cambio_precio1', //fase2
+        'cambio_precio2', //fase2
+        'comodidades', //nofiltro
+        
+        //contacto 123
         'fecha_contacto1',
         'conclusion_contacto1',
         'registro_fecha_contacto1',

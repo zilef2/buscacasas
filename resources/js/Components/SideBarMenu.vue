@@ -25,6 +25,8 @@ const sidebarButtonsNormal = [ //SAME AS WEB.PHP //-tochange plantilla
 	'Casa',
 	'Apartamento',
 	'Foto',
+	'prueb',
+	'yeya',
 	//aquipuesSide
 ];
 function capitalizeFirstLetter(string) {

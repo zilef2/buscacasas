@@ -83,10 +83,7 @@ class ApartamentoController extends Controller
     public function store(Request $request){
         $permissions = Myhelp::EscribirEnLog($this, ' Begin STORE:Apartamentos');
         DB::beginTransaction();
-//        $no_nada = $request->no_nada['id'];
-//        $request->merge(['no_nada_id' => $request->no_nada['id']]);
         $Apartamento = Apartamento::create($request->all());
-
         DB::commit();
         Myhelp::EscribirEnLog($this, 'STORE:Apartamentos EXITOSO', 'Apartamento id:' . $Apartamento->id . ' | ' . $Apartamento->nombre, false);
         return back()->with('success', __('app.label.created_successfully', ['name' => $Apartamento->nombre]));

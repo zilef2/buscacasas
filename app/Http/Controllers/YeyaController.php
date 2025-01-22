@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\helpers\Myhelp;
 use App\helpers\MyModels;
-use App\Models\generic;
+use App\Models\yeya;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request as LaravelRequest;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
@@ -14,61 +14,61 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class geenericController extends Controller
+class YeyaController extends Controller
 {
     public $thisAtributos;
-    public string $FromController = 'generic';
+    public string $FromController = 'yeya';
     public string $atributoBusqueda = 'adjetivo';
 
     //<editor-fold desc="Construc | mapea | filtro and dependencia">
     private int $segundos = 1;
 
     public function __construct(){
-        $this->thisAtributos = (new generic())->getFillable();
+        $this->thisAtributos = (new yeya())->getFillable();
     }
 
     public function Filtros($request)
     {
         $modelClass = "App\\Models\\" . $this->FromController;
-        $generico = resolve($modelClass)->query();
-        $generico = $generico->select([
+        $yeyao = resolve($modelClass)->query();
+        $yeyao = $yeyao->select([
             'id',
             'fecha_ini',
             'categoria',
         ]);
 
         if ($request->has('search')) {
-            $generico->where(function ($query) use ($request) {
+            $yeyao->where(function ($query) use ($request) {
                 $query->orWhere('fecha_realizacion', 'LIKE', "%" . $request->search . "%")
                     ->orWhere($this->atributoBusqueda, 'LIKE', "%" . $request->search . "%");
             });
         }
 
-        return $generico;
+        return $yeyao;
     }
 
-    public function MapearClaseP_P($request, $generic)
+    public function MapearClaseP_P($request, $yeya)
     {
-        $generic->orderBy('updated_at', 'desc');
+        $yeya->orderBy('updated_at', 'desc');
 
         if ($request->has(['field', 'order'])) {
             $field = $request->input('field');
             $order = $request->input('order');
             if ($order === 'asc') {
-                $generic = $generic->orderBy($field);
+                $yeya = $yeya->orderBy($field);
             } else {
-                $generic = $generic->orderByDesc($field);
+                $yeya = $yeya->orderByDesc($field);
             }
         }
         $myhelp = new Myhelp();
 
-        $generic = $generic->get()->map(function ($registrosmedio) use ($myhelp) {
+        $yeya = $yeya->get()->map(function ($registrosmedio) use ($myhelp) {
             $registrosmedio->aspecto = '';
 
             return $registrosmedio;
         })->filter();
 
-        return $generic;
+        return $yeya;
     }
 
     //</editor-fold>
@@ -84,7 +84,7 @@ class geenericController extends Controller
     
     public function index(LaravelRequest $request): Response
     {
-        $numberPermissions = MyModels::getPermissionToNumber(Myhelp::EscribirEnLog($this, ' generic '));
+        $numberPermissions = MyModels::getPermissionToNumber(Myhelp::EscribirEnLog($this, ' yeya '));
         $fromController = $this->Filtros($request);
         $fromController = $this->cacheRemember($request, $fromController);
         
@@ -117,13 +117,13 @@ class geenericController extends Controller
 
     public function store(LaravelRequest $request)
     {
-        $permissions = Myhelp::EscribirEnLog($this, ' Begin STORE:generics');
+        $permissions = Myhelp::EscribirEnLog($this, ' Begin STORE:yeyas');
         DB::beginTransaction();
-        $generic = generic::create($request->all());
+        $yeya = yeya::create($request->all());
 
         DB::commit();
-        Myhelp::EscribirEnLog($this, 'STORE:generics EXITOSO', 'generic id:' . $generic->id , false);
-        return back()->with('success', __('app.label.created_successfully', ['name' => $generic->nombre]));
+        Myhelp::EscribirEnLog($this, 'STORE:yeyas EXITOSO', 'yeya id:' . $yeya->id , false);
+        return back()->with('success', __('app.label.created_successfully', ['name' => $yeya->nombre]));
     }
 
     //fin store functions
@@ -132,15 +132,15 @@ class geenericController extends Controller
 
     public function update(LaravelRequest $request, $id)
     {
-        Myhelp::EscribirEnLog($this, ' Begin UPDATE:generics');
+        Myhelp::EscribirEnLog($this, ' Begin UPDATE:yeyas');
         DB::beginTransaction();
-        $generic = generic::findOrFail($id);
-        $request->merge(['dependex_id' => $request->dependex['id']]);
-        $generic->update($request->all());
+        $yeya = yeya::findOrFail($id);
+        $request->merge(['no_nada_id' => $request->no_nada['id']]);
+        $yeya->update($request->all());
 
         DB::commit();
-        Myhelp::EscribirEnLog($this, 'UPDATE:generics EXITOSO', 'generic id:' . $generic->id , false);
-        return back()->with('success', __('app.label.updated_successfully2', ['nombre' => $generic->{$this->thisAtributos[1]}]));
+        Myhelp::EscribirEnLog($this, 'UPDATE:yeyas EXITOSO', 'yeya id:' . $yeya->id , false);
+        return back()->with('success', __('app.label.updated_successfully2', ['nombre' => $yeya->{$this->thisAtributos[1]}]));
     }
 
     /**
@@ -150,21 +150,21 @@ class geenericController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
 
-    public function destroy($genericid)
+    public function destroy($yeyaid)
     {
-        $permissions = Myhelp::EscribirEnLog($this, 'DELETE:generics');
-        $generic = generic::find($genericid);
-        $elnombre = $generic->nombre;
-        $generic->delete();
-        Myhelp::EscribirEnLog($this, 'DELETE:generics', 'generic id:' . $generic->id  . ' borrado', false);
+        $permissions = Myhelp::EscribirEnLog($this, 'DELETE:yeyas');
+        $yeya = yeya::find($yeyaid);
+        $elnombre = $yeya->nombre;
+        $yeya->delete();
+        Myhelp::EscribirEnLog($this, 'DELETE:yeyas', 'yeya id:' . $yeya->id  . ' borrado', false);
         return back()->with('success', __('app.label.deleted_successfully', ['name' => $elnombre]));
     }
 
     public function destroyBulk(LaravelRequest $request)
     {
-        $generic = generic::whereIn('id', $request->id);
-        $generic->delete();
-        return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.generic')]));
+        $yeya = yeya::whereIn('id', $request->id);
+        $yeya->delete();
+        return back()->with('success', __('app.label.deleted_successfully', ['name' => count($request->id) . ' ' . __('app.label.yeya')]));
     }
     //FIN : STORE - UPDATE - DELETE
 

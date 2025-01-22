@@ -35,8 +35,6 @@ class CasaController extends Controller
         if ($request->has('search')) {
             $Casas = $Casas->where(function ($query) use ($request) {
                 $query->where('nombre', 'LIKE', "%" . $request->search . "%")
-                    //                    ->orWhere('codigo', 'LIKE', "%" . $request->search . "%")
-                    //                    ->orWhere('identificacion', 'LIKE', "%" . $request->search . "%")
                 ;
             });
         }

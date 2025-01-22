@@ -63,6 +63,8 @@ Route::middleware(['auth'])->group(callback: function () {
 	Route::resource("/Casa", \App\Http\Controllers\CasaController::class);
 	Route::resource("/Apartamento", \App\Http\Controllers\ApartamentoController::class);
 	Route::resource("/Foto", \App\Http\Controllers\FotoController::class);
+	Route::resource("/prueb", \App\Http\Controllers\PruebController::class);
+	Route::resource("/yeya", \App\Http\Controllers\YeyaController::class);
 	//aquipues
     //</editor-fold>
 

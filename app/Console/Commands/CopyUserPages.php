@@ -10,153 +10,179 @@ use Illuminate\Support\Facades\File;
 /*
  * php artisan make:command MakeModelExperimental
  */
+
 class CopyUserPages extends Command
 {
-    protected $signature = 'copy:u {folderName : Clase} {limpiar?} {depende? : depende de otra clase}';
+
+    protected function generateAttributes($modelName): array
+    {
+        // Regla básica: nombres genéricos
+        return [
+            'nombre' => 'string',
+            'descripcion' => 'text',
+            'precio' => 'decimal',
+            'estado' => 'boolean',
+            'fecha_disponible' => 'date',
+        ];
+    }
+
+    protected $signature = 'copy:u';
     protected $description = 'Copia de la entidad generica';
+
+    const MSJ_GENERANDO = 'La genericacion del componente: ';
+    const MSJ_EXITO = ' fue realizada con exito ';
+    const MSJ_FALLO = ' Fallo';
 
     public function handle(): void
     {
-        $foldernan = $this->argument('folderName');
-        $limpiar = $this->argument('limpiar');
+        $modelName = $this->ask('¿Cuál es el nombre del modelo?');
+        if (!$modelName || $modelName == '') {
+            $this->info('Sin modelo');
+            return;
+        }
 
+        $depende = $this->ask('¿depende de otro modelo?');
         $plantillaActual = 'generic';
-        $mensajeA = 'La genericacion del componente: ';
-        $mensajeExito = ' fue realizada con exito ';
-        $mensajeFallo = ' fallo';
+
 
         $this->warn("Empezando make:model");
-        Artisan::call('make:model', ['name' => $foldernan, '--all' => true]);
-        $this->warn("Fin model");
+        Artisan::call('make:model', ['name' => $modelName, '--all' => true]);
+        $this->warn("Empezando copies");
         Artisan::call('copy:f');
-        $this->warn("Fin copies");
-        Artisan::call('lang:u '.$foldernan);
-        $this->warn("Fin Lang");
+        $this->warn("Ahora Lang");
+        Artisan::call('lang:u ' . $modelName);
 
 
-        $RealizoVueConExito = $this->MakeVuePages($plantillaActual);
-        $mensaje = $RealizoVueConExito ? $mensajeA.' Vuejs'.$mensajeExito
-            : $mensajeA.' Vuejs'.$mensajeFallo;
+        $RealizoVueConExito = $this->MakeVuePages($plantillaActual, $modelName);
+        $mensaje = $RealizoVueConExito ? self::MSJ_GENERANDO . ' Vuejs' . self::MSJ_EXITO
+            : self::MSJ_GENERANDO . ' Vuejs' . self::MSJ_FALLO;
         $this->info($mensaje);
 
 
-        $RealizoControllerConExito = $this->MakeControllerPages($plantillaActual);
-        $mensaje = $RealizoControllerConExito ? $mensajeA.'el controlador'.$mensajeExito
-            : $mensajeA.' controlador '.$mensajeFallo;
+        $RealizoControllerConExito = $this->MakeControllerPages($plantillaActual, $modelName);
+        $mensaje = $RealizoControllerConExito ? self::MSJ_GENERANDO . 'el controlador' . self::MSJ_EXITO
+            : self::MSJ_GENERANDO . ' controlador ' . self::MSJ_FALLO;
         $this->info($mensaje);
 
 
-        if($RealizoControllerConExito || $RealizoVueConExito)
+        if ($RealizoControllerConExito || $RealizoVueConExito)
             $this->replaceWordInFiles($plantillaActual,
-            [
-                'vue' => $RealizoVueConExito,
-                'controller' => $RealizoControllerConExito
-            ])
-        ;
+                [
+                    'vue' => $RealizoVueConExito,
+                    'controller' => $RealizoControllerConExito
+                ]
+                , $modelName, $depende);
 
 
-        $this->DoWebphp($foldernan);
-        $this->DoAppLenguaje($foldernan);
-        $this->DoSideBar($foldernan);
-        if($limpiar){
-            $this->info("Fin de la operacion. Se limpiará cache\n\n");
-            $this->info('optimize: ');
-            $this->info(Artisan::call('optimize'));
-            $this->info('optimize_clear: ');
-            $this->info(Artisan::call('optimize:clear'));
-        }
+        $this->DoWebphp($modelName);
+        $this->DoAppLenguaje($modelName);
+        $this->DoSideBar($modelName);
+        $this->DoFillable($modelName);
+        $this->updateMigration($modelName);
+
+        $this->info("Fin de la operacion. Se limpiará cache\n\n");
+        $this->info('Corriendo el comando optimize: ');
+        $this->info(Artisan::call('optimize'));
+        $this->info('Corriendo el comando optimize:clear ');
+        $this->info(Artisan::call('optimize:clear'));
     }
 
 
-    private function MakeControllerPages($plantillaActual){
-        $folderName = $this->argument('folderName');
-        $folderMayus = ucfirst($folderName);
-        $sourcePath = base_path('app/Http/Controllers/'.$plantillaActual.'sController.php');
-        $destinationPath = base_path("app/Http/Controllers/".$folderMayus."sController.php");
+    private function MakeControllerPages($plantillaActual, $modelName): bool
+    {
+        $folderMayus = ucfirst($modelName);
+        $sourcePath = base_path('app/Http/Controllers/' . $plantillaActual . 'sController.php');
+        $destinationPath = base_path("app/Http/Controllers/" . $folderMayus . "sController.php");
 
         if (File::exists($destinationPath)) {
             $this->warn("La carpeta de destino '{$destinationPath}' ya existe.");
             return false;
         }
         File::copyDirectory($sourcePath, $destinationPath);
-        $this->info("- ".$sourcePath);
-        $this->info("- ".$destinationPath);
+        $this->info("- " . $sourcePath);
+        $this->info("- " . $destinationPath);
 
         return true;
     }
 
-    private function MakeVuePages($plantillaActual){
-        $folderName = $this->argument('folderName');
-
-        $sourcePath = base_path('resources/js/Pages/'.$plantillaActual);
-        $destinationPath = base_path("resources/js/Pages/{$folderName}");
+    private function MakeVuePages($plantillaActual, $modelName): bool
+    {
+        $sourcePath = base_path('resources/js/Pages/' . $plantillaActual);
+        $destinationPath = base_path("resources/js/Pages/{$modelName}");
 
         if (File::exists($destinationPath)) {
-            $this->warn("La carpeta de destino '{$folderName}' ya existe.");
+            $this->warn("La carpeta de destino '{$modelName}' ya existe.");
             return false;
         }
         File::copyDirectory($sourcePath, $destinationPath);
         return true;
     }
 
-    private function replaceWordInFiles($oldWord,$permiteRemplazo){
-        $newWord = $this->argument('folderName');
-        $folderMayus = ucfirst($newWord);
-        $files = File::allFiles(base_path("resources/js/Pages/{$newWord}"));
-        $controller = base_path("app/Http/Controllers/{$folderMayus}".'Controller.php');
-        $depende = $this->argument('depende') ?? '';
+    private function replaceWordInFiles($oldWord, $permiteRemplazo, $modelName, $depende): void
+    {
+        $folderMayus = ucfirst($modelName);
+        $files = File::allFiles(base_path("resources/js/Pages/{$modelName}"));
+        $controller = base_path("app/Http/Controllers/{$folderMayus}" . 'Controller.php');
 
         $depende = $depende == '' || $depende == null ? 'no_nada' : $depende;
 
-        if($permiteRemplazo['vue']){
+        if ($permiteRemplazo['vue']) {
             foreach ($files as $key => $file) {
 
                 $content = file_get_contents($file);
-                $content = str_replace(array($oldWord, ucfirst($oldWord),'geeneric'),//ojo aqui, es estatico
-                                            [$newWord, $folderMayus,$folderMayus],
-                                            $content
+                $content = str_replace(array($oldWord, ucfirst($oldWord), 'geeneric'),//ojo aqui, es estatico
+                    [$modelName, $folderMayus, $folderMayus],
+                    $content
                 );
                 file_put_contents($file, $content);
             }
         }
 
         //reemplazo de controlador
-        if($permiteRemplazo['controller']){
-                $sourcePath = base_path('app/Http/Controllers/'.ucfirst($oldWord).'Controller.php');
-                $content = file_get_contents($sourcePath);
-                $content = str_replace(array($oldWord, 'dependex','deependex','geeneric'),//ojo aqui, es estatico
-                                       array($newWord,  $depende ,ucfirst($depende),ucfirst($newWord)),
-                                       $content
-                );
-
-                file_put_contents($controller, $content);
+        if ($permiteRemplazo['controller']) {
+            $sourcePath = base_path('app/Http/Controllers/' . ucfirst($oldWord) . 'Controller.php');
+            $content = file_get_contents($sourcePath);
+            $content = str_replace(array($oldWord, 'dependex', 'deependex', 'geeneric'),//ojo aqui, es estatico
+                array($modelName, $depende, ucfirst($depende), ucfirst($modelName)),
+                $content
+            );
+            file_put_contents($controller, $content);
         }
     }
 
-    private function DoFillable()
+    protected function DoFillable($modelName): void
     {
-        $directory = 'app/Models';
-        $files = glob($directory . '/*.php');
+        $attributes = $this->generateAttributes($modelName);
 
-        $fillable = "\n    protected \$fillable = [\n        'id',\n    ];\n";
+        // Generar el fillable
+        $fillable = array_keys($attributes);
+        $fillableString = implode("', '", $fillable);
 
-        foreach ($files as $file) {
+        // Ruta del modelo
+        $modelPath = app_path("Models/{$modelName}.php");
 
-            $content = file_get_contents($file);
-
-            if (strpos($content, 'protected $fillable') === false) {
-                $content = preg_replace('/(use HasFactory;)/', "$1$fillable", $content);
-                file_put_contents($file, $content);
-                $this->info("Actualizado: $file\n");
-            } else {
-                $this->info("Ya existe en: $file\n");
-            }
+        // Verificar si el modelo existe
+        if (!File::exists($modelPath)) {
+            $this->error("El modelo {$modelName} no existe.");
+            return;
         }
 
-        return true;
+        // Leer el contenido del modelo
+        $modelContent = File::get($modelPath);
+
+        // Añadir el fillable y SoftDeletes
+        $modelContent = preg_replace('/protected \$fillable = \[.*?\];/s', "protected \$fillable = ['{$fillableString}'];", $modelContent);
+        if (!str_contains($modelContent, 'use SoftDeletes;')) {
+            $modelContent = preg_replace('/class ' . $modelName . ' extends/', "use Illuminate\Database\Eloquent\SoftDeletes;\n\n    class {$modelName} extends", $modelContent);
+        }
+
+        // Guardar el contenido modificado
+        File::put($modelPath, $modelContent);
+
+        $this->info("El fillable y SoftDeletes han sido añadidos al modelo {$modelName}.");
     }
 
-    private function DoAppLenguaje($resource)
+    private function DoAppLenguaje($resource): void
     {
         $directory = 'lang/es/app.php';
         $files = glob($directory);
@@ -164,13 +190,13 @@ class CopyUserPages extends Command
         $insertable = "'$resource' => '$resource',\n\t\t//aquipues";
         $pattern = '/\/\/aquipues/';
 
-        foreach ($files as $file){
+        foreach ($files as $file) {
             $content = file_get_contents($file);
             if (strpos($content, $pattern) === false) {
                 $content2 = preg_replace($pattern, $insertable, $content);
 //                $content2 = preg_replace($pattern, "$0$insertable", $content);
                 file_put_contents($file, $content2);
-                if($content == $content2)
+                if ($content == $content2)
                     $this->info("Language Actualizado: $file\n");
                 else
                     $this->info("Language sin cambios: $file\n");
@@ -179,7 +205,6 @@ class CopyUserPages extends Command
             }
         }
 
-        return true;
     }
 
 
@@ -199,7 +224,7 @@ class CopyUserPages extends Command
                 $content2 = preg_replace($pattern, $insertable, $content);
 //                $content2 = preg_replace($pattern, "$0$insertable", $content);
                 file_put_contents($file, $content2);
-                if($content == $content2)
+                if ($content == $content2)
                     $this->info("Routes Actualizado: $file\n");
                 else
                     $this->info("Routes sin cambios: $file\n");
@@ -216,7 +241,7 @@ class CopyUserPages extends Command
         $directory = 'resources/js/Components/SideBarMenu.vue';
         $files = glob($directory);
 
-        $insertable = "'".$resource."',\n\t//aquipuesSide";
+        $insertable = "'" . $resource . "',\n\t//aquipuesSide";
         $pattern = '/\/\/aquipuesSide/';
 
         foreach ($files as $file) {
@@ -226,7 +251,7 @@ class CopyUserPages extends Command
                 $content2 = preg_replace($pattern, $insertable, $content);
                 //$content2 = preg_replace($pattern, "$0$insertable", $content);
                 file_put_contents($file, $content2);
-                if($content != $content2)
+                if ($content != $content2)
                     $this->info("SideBarMenu.vue Actualizado: $file\n");
                 else
                     $this->info("SideBarMenu.vue sin cambios: $file\n"); //todo: revisar si ya existe
@@ -236,6 +261,28 @@ class CopyUserPages extends Command
         }
 
         return true;
+    }
+
+    protected function updateMigration($modelName): void
+    {
+        $atributos = $this->generateAttributes($modelName);
+        $migrationFile = collect(glob(database_path('migrations/*.php')))
+            ->first(fn($file) => str_contains($file, 'create_' . Str::snake(Str::plural($modelName)) . '_table'));
+
+        if (!$migrationFile) {
+            $this->error("No se encontró la migración para $modelName");
+            return;
+        }
+
+        $columns = collect($atributos)->map(function ($type, $name) {
+            return "\$table->$type('$name');";
+        })->implode("\n            ");
+
+        $content = file_get_contents($migrationFile);
+        $content = preg_replace('/Schema::create\(.*?\{/', "$0\n            $columns", $content);
+        file_put_contents($migrationFile, $content);
+
+        $this->info("Migración actualizada para $modelName");
     }
 
 }

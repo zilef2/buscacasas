@@ -17,46 +17,41 @@
             </TabList>
 
             <TabPanels class="mt-2">
+<!--                    v-for="(posts, idx) in Object.values(categories)"-->
                 <TabPanel
-                    v-for="(posts, idx) in Object.values(categories)"
-                    :key="idx"
+                    v-for="(elobjeto, index) in labelsform"
+                    :key="index"
                     :class="[ 'rounded-xl bg-white p-3', 'ring-white/60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2', ]"
                 >
-                    <ul>
-                        <li v-for="post in posts" :key="post.id" class="relative rounded-md p-3 hover:bg-gray-100">
-                            <h3 class="text-sm font-medium leading-5">{{ post.title }}</h3>
-                            <ul class="mt-1 flex space-x-1 text-xs font-normal leading-4 text-gray-500">
-                                <li>{{ post.date }}</li>
-                                <li>&middot;</li>
-                                <li>{{ post.labelform }}</li>
-                                <li>&middot;</li>
-                                <li>{{ post.shareCount }} shares</li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <div class="m-1 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 text-sm font-normal leading-4 ">
+                        <div v-for="(names , indx2) in elobjeto" :key="indx2"
+                             class="m-2 text-gray-800">
+                            <div>
+                                <small class="mx-2 text-lg capitalize">{{ labelsform[index][indx2] }} 
+                                    noome  
+                                    {{ tabsform }} :::
+                                    {{ indx2 }}
+                                </small>
+                                <TextInput v-model="tabsform[(indx2)]"
+                                           type="text"
+                                           class="block w-4/6 xl:w-full m-2 rounded-lg"
+                                           :placeholder="labelsform[index][indx2]"/>
+                            </div>
+                        </div>
+                    </div>
                 </TabPanel>
-                
             </TabPanels>
-                <ul v-for="names in justNames"
-                    class="m-1 flex text-sm font-normal leading-4 text-gray-800">
-                    <li>
-                        {{ labelsform[names] }}
-                        <TextInput v-model="tabsform[names]"
-                                   type="text"
-                                   class="block w-4/6 md:w-3/6 lg:w-2/6 rounded-lg"
-                                   placeholder="Nombre, codigo"/>
-                    </li>
-                </ul>
         </TabGroup>
     </div>
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import {ref, toRaw, watch} from 'vue'
 import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue'
 import TextInput from "@/Components/TextInput.vue";
 import {onMounted} from 'vue';
-import {useForm} from "@inertiajs/vue3";
+import {router, useForm} from "@inertiajs/vue3";
+import _, {debounce, pickBy} from "lodash";
 
 const props = defineProps({
     tamano_m2: Number,
@@ -66,49 +61,86 @@ onMounted(() => {
     //     props.buscadorEntero.tamano_m2 = 40
     // }
 })
+
 // const justNames = props.titulos.map(names => names['order'])
 const justNames = [
-    'tipo_inmueble',
-    'ventaOarriendo',
-    'barrio',
-
-    'ciudad',
-    'pais',
-
+    'precio',
+    'administracion',
+    
+    'habitaciones',
+    'banos',
+    'acepta_mascotas',
+    'terraza',
+    'pisos_interiores',
+    'parqueaderos',
     'usado',
     'inmoviliaria',
     'tamano_m2',
+    'contacto_celular',
+    'contacto_celular2',
+    'estrato',
+    'antiguedad',
 ]
 
-const tabsform = useForm({...Object.fromEntries(justNames.map(field => [field, '']))});
-// const tabsform = useForm({
-//     name: '',
-//     tipo_inmueble: '',
-//     ventaOarriendo: '',
-//     barrio: '',
-//     ciudad: '',
-//     pais: '',
-//     usado: '',
-//     inmoviliaria: '',
-//     tamano_m2: '',
-// });
+const tabsform = useForm({
+    // ...Object.fromEntries(justNames.map(field => [field, '']))}
+    precio: '',
+    administracion: '',
 
-const labelsform = {
-    name: 'Nombre',
-    tipo_inmueble: 'tipo de inmueble',
-    ventaOarriendo: 'Venta o Arriendo',
-    barrio: 'Barrio',
-    ciudad: 'Ciudad',
-    pais: 'Pais',
-    usado: 'Usadso',
-    inmoviliaria: 'Inmoviliaria',
-    tamano_m2: 'Metros²',
-}
+    habitaciones: '',
+    banos: '',
+    acepta_mascotas: '',
+    terraza: '',
+    pisos_interiores: '',
+    parqueaderos: '',
+    usado: '',
+    inmoviliaria: '',
+    tamano_m2: '',
+    contacto_celular: '',
+    contacto_celular2: '',
+    estrato: '',
+    antiguedad: '',
+});
+
+   // tipo_inmueble: 'tipo de inmueble',
+        // ventaOarriendo: 'Venta o Arriendo',
+        // barrio: 'Barrio',
+        // ciudad: 'Ciudad',
+        // pais: 'Pais',
+const labelsform = [
+    {
+        precio:'precio',
+        administracion:'administracion',
+    },
+    {
+        habitaciones:'habitaciones',
+        banos:'baños',
+        // acepta_mascotas:'acepta mascotas',
+        terraza:'terraza',
+        pisos_interiores:'pisos interiores',
+        parqueaderos:'parqueaderos'
+    },
+    {
+     
+        usado: 'Usado',
+        inmoviliaria: 'Inmoviliaria',
+        tamano_m2: 'Metros²',
+    },
+    {
+        contacto_celular:'Contacto celular',
+        contacto_celular2:'Contacto celular Num2',
+    },
+    {
+        estrato:'estrato',
+        antiguedad:'antiguedad',
+    },
+    
+]
 function capitalizeFirstLetter(val){
     return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 }
-    const categories = ref({
-    Tamaño: [
+const categories = ref({
+    Capital: [
         {
             id: 1,
             title: 'tipo_inmueble',
@@ -123,11 +155,22 @@ function capitalizeFirstLetter(val){
             labelform: 3,
             shareCount: 2,
         },
+    ],
+    Comodidades: [
         {
-            id: 3,
-            title: "barrio",
-            date: '2h ago',
-            labelform: 3,
+            id: 1,
+            title: 'tipo_inmueble',
+            date: '5h ago',
+            labelform: 'Tipo inmueble',
+            shareCount: 2,
+        },
+    ],
+    Tamaño: [
+        {
+            id: 1,
+            title: 'tipo_inmueble',
+            date: '5h ago',
+            labelform: 'Tipo inmueble',
             shareCount: 2,
         },
     ],
@@ -164,4 +207,16 @@ function capitalizeFirstLetter(val){
         },
     ],
 })
+
+console.log("=>(tabs.vue:201) tabsform", tabsform);
+watch(() => _.cloneDeep(tabsform),
+  debounce(() => {
+    const params = pickBy(toRaw(tabsform)); // Elimina la reactividad para obtener un objeto plano.
+    console.log("=>(tabs.vue:205) params", params);
+    router.get(route("Casa.index"), params, {
+      replace: true,
+      preserveState: true,
+      preserveScroll: true,
+    });
+}, 150));
 </script>

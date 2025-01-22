@@ -27,6 +27,10 @@ return [
 		'Apartamento' => 'Apartamento',
 		'foto' => 'Foto',
 		'Foto' => 'Foto',
+		'prueb' => 'Prueb',
+		'prueb' => 'prueb',
+		'yeya' => 'Yeya',
+		'yeya' => 'yeya',
 		//aquipues
     ],
 
@@ -44,6 +48,10 @@ return [
 		'Apartamento' => 'Apartamento',
 		'foto' => 'Foto',
 		'Foto' => 'Foto',
+		'prueb' => 'Prueb',
+		'prueb' => 'prueb',
+		'yeya' => 'Yeya',
+		'yeya' => 'yeya',
 		//aquipues
 
         //transaccion
